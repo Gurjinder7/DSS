@@ -14,7 +14,7 @@ body {
         background-color:rgb(30, 125, 202);
         text-align: center;
         height: 150px;
-        color: #000000;
+        color: #fff;
     }
 
     header > h1{
@@ -62,7 +62,7 @@ body {
     }
 
     .link_btn:hover {
-        background-color: #25abb2;
+        background-color: #4fd2d9;
     }
 
     .error {
@@ -298,7 +298,7 @@ main button {
 }
 
 main button:hover {
-    background-color: #5cd9f2;
+    background-color: #5cccf2;
 }
 
 #postForm {
@@ -364,5 +364,5 @@ legend{
 }
 
 #postForm button[type=submit]:hover {
-    background-color: #5cdef2;
+    background-color: #5cccf2;
 }
