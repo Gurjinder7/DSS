@@ -1,5 +1,28 @@
 {
-  "devDependencies": {
-    "express": "^4.21.1"
-  }
+  "name": "dss",
+  "version": "1.0.0",
+  "description": "DSS Food Blog This is the front-end for your DSS Blog. It has a \"Login\" page, a \"Home\" page, a \"Posts\" page, and a \"My Posts\" page. It includes functional login, plus search, add, edit and delete of posts using local JSON files. You will update the functionality through the completion of your assignment.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gurjinder7/DSS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gurjinder7/DSS/issues"
+  },
+  "homepage": "https://github.com/Gurjinder7/DSS#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "type": "module"
 }
