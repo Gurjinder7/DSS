@@ -32,11 +32,11 @@ Posts are loaded from a local JSON file called posts.json. Posts are loaded on t
 - OAuth?
 - 2-Factor Auth
 
-# CSRF
+## CSRF
 - Double-submitted cookies
 - Tokens
 
-# XSS
+## XSS
 - Whitelisting/allowlisting
 - Escaping characters
 
