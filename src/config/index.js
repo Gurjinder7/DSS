@@ -6,9 +6,16 @@ const env = (key) => process.env[key];
 
 export const config = {
   jwt: {
-    secret: env("JWT_SECRET"),
-    cookieName: env("JWT_COOKIE_NAME"),
-    expiresIn: env("JWT_EXPIRES_IN"),
+    accessToken: {
+      secret: env("JWT_ACCESS_SECRET"),
+      expiresIn: "5m",
+      cookieName: "access_token",
+    },
+    refreshToken: {
+      secret: env("JWT_REFRESH_SECRET"),
+      expiresIn: "1d",
+      cookieName: "refresh_token",
+    },
   },
   users: [
     {

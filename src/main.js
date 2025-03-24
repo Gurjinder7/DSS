@@ -24,6 +24,7 @@ async function main() {
 
   // Auth endpoints
   app.post("/api/login", AuthController.login);
+  app.post("/api/refresh", AuthController.refresh);
   app.post("/api/logout", authenticateToken, AuthController.logout);
 
   // Protected routes
