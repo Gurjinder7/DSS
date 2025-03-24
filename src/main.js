@@ -22,6 +22,10 @@ async function main() {
     res.sendFile(path.join(__dirname, "views", "login.html"));
   });
 
+  app.get("/register", checkAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "register.html"));
+  });
+
   // Auth endpoints
   app.post("/api/login", AuthController.login);
   app.post("/api/refresh", AuthController.refresh);

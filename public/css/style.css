@@ -8,6 +8,7 @@ body {
     font-family: sans-serif, Arial;
     line-height: 1.5;  
     font-size: 16px;     
+    margin: 0;
     }
 
     header{
@@ -66,14 +67,18 @@ body {
     }
 
     .error {
-        color: red;
+        color: orangered;
+    }
+
+    .info {
+        color: teal;
     }
 
     #login_form {
         font-size: 20px;
     }
 
-    #login_btn {
+    .login_btn {
         width: 100px;
         color: black;
         background-color: #36b2f5;
@@ -86,8 +91,9 @@ body {
         transition: background 300ms ease-in-out;
     }
 
-    #login_btn:hover {
+    .login_btn:hover {
         background-color: #5cbbf2;
+        cursor: pointer;
     }
 
     label {
@@ -365,4 +371,41 @@ legend{
 
 #postForm button[type=submit]:hover {
     background-color: #5cccf2;
+}
+
+
+.log-reg-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    min-width: 100vw;
+    flex-direction: column;
+    background-color: #e4eff3;
+    /* text-align: center; */
+}
+
+.log-reg-form .form-group {
+    margin: .3rem 0rem;
+    padding: .5rem;
+    /* background-color: #4490e0; */
+}
+
+.info-size {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: start;
+}
+
+.form-group input {
+    width: 100%;
+}
+
+.align-centre {
+    text-align: center;
+}
+
+#password_error, #username_error, #email_error, #name_error {
+    display: none;
 }
