@@ -1,3 +1,10 @@
+# Run the project - in the root directory 
+  1. npm i
+  2. npm run start
+
+
+
+
 # DSS Food Blog
 This is the front-end for your DSS Blog. It has a "Login" page, a "Home" page, a "Posts" page, and a "My Posts" page. It includes
 functional login, plus search, add, edit and delete of posts using local JSON files. You will update the functionality through the completion of your assignment.
@@ -22,6 +29,11 @@ Posts are loaded from a local JSON file called posts.json. Posts are loaded on t
   - Recommended length
   - Check if personal info (name, DoB etc.) is in password
 
+## Forgot passwords:
+  - we can add a security question for forget password along with email
+  - question has to be something not answerable as per personal info
+    - who is your favourite movie villian ?
+    - 
 ## SQL Injection
 - Sanitise inputs
 - Search boxes
@@ -43,3 +55,8 @@ Posts are loaded from a local JSON file called posts.json. Posts are loaded on t
 # Account Enumeration
 - Don’t give different feedback for invalid username or password, make it the same message
 - Authentication should take the same amount of time with an incorrect username or password
+
+
+
+### Register page
+
