@@ -3,7 +3,16 @@
   2. npm run start
 
 
-
+# Setup DB
+```bash
+docker run -d \
+  --name postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=dss_db \
+  -p 5432:5432 \
+  postgres:alpine
+```
 
 # DSS Food Blog
 This is the front-end for your DSS Blog. It has a "Login" page, a "Home" page, a "Posts" page, and a "My Posts" page. It includes
