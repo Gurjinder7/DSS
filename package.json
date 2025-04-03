@@ -4,7 +4,8 @@
   "description": "DSS Food Blog This is the front-end for your DSS Blog. It has a \"Login\" page, a \"Home\" page, a \"Posts\" page, and a \"My Posts\" page. It includes functional login, plus search, add, edit and delete of posts using local JSON files. You will update the functionality through the completion of your assignment.",
   "main": "src/main.js",
   "scripts": {
-    "start": "nodemon ."
+    "start": "nodemon .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9"
   }
 }
