@@ -1,4 +1,4 @@
-const commonPasswords = [
+export const commonPasswords = [
     "password",
     "12345678",
     "123456789",
@@ -111,7 +111,5 @@ const commonPasswords = [
     "myspace1",
     "facebook",
     "hello123"
-
-
-    
-]
+  
+];

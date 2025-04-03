@@ -1,9 +1,11 @@
 import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import cookieParser from "cookie-parser";
 import { authenticateToken, checkAuthenticated } from "./middleware/auth.js";
 import { AuthController } from "./controllers/auth.controller.js";
+import { checkCommonPassword} from "./middleware/checkCommonPassword.js";
+import  { registerUser } from "./controllers/register.controller.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +32,7 @@ async function main() {
   app.post("/api/login", AuthController.login);
   app.post("/api/refresh", AuthController.refresh);
   app.post("/api/logout", authenticateToken, AuthController.logout);
+  app.post("/api/register", checkCommonPassword, registerUser);
 
   // Protected routes
   app.get("/", authenticateToken, (req, res) => {

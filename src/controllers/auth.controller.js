@@ -2,6 +2,7 @@ import { AuthService } from "../services/auth.service.js";
 import { config } from "../config/index.js";
 import { tokenCache } from "../services/token-cache.service.js";
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class AuthController {
   static async login(req, res) {
     try {
