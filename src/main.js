@@ -6,9 +6,18 @@ import { authenticateToken, checkAuthenticated } from "./middleware/auth.js";
 import { AuthController } from "./controllers/auth.controller.js";
 import { checkCommonPassword} from "./middleware/checkCommonPassword.js";
 import  { registerUser } from "./controllers/register.controller.js"
+import { firstTimeClient, createDatabaseIfNone } from "./psql.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+firstTimeClient.connect().then(async res => {
+  await createDatabaseIfNone();
+}).catch(e => {
+  console.log(e)
+})
 
 async function main() {
   const app = express();

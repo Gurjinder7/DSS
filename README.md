@@ -1,6 +1,10 @@
 # Run the project - in the root directory 
   1. npm i
-  2. npm run start
+  2. Go to `psql.js` file
+  3. Make changes to pgClient details - your password, username etc
+     1. If everything goes right, A DB is created in case it is first time
+     2. Else, a connection is made to use pgClient for db queries
+  4. npm run start
 
 
 # Setup DB
@@ -13,6 +17,9 @@ docker run -d \
   -p 5432:5432 \
   postgres:alpine
 ```
+
+
+
 
 # DSS Food Blog
 This is the front-end for your DSS Blog. It has a "Login" page, a "Home" page, a "Posts" page, and a "My Posts" page. It includes
