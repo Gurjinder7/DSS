@@ -9,6 +9,7 @@ body {
     line-height: 1.5;  
     font-size: 16px;     
     margin: 0;
+    position: relative;
     }
 
     header{
@@ -408,4 +409,32 @@ legend{
 
 #password_error, #username_error, #email_error, #name_error {
     display: none;
+}
+
+
+.pos-relative {
+    position: relative;
+}
+
+.error-box {
+    position: absolute;
+    top: 5%;
+    right: 2%;
+    background-color: gainsboro;
+    border: 3px solid salmon;
+    padding: 5px 10px;
+    max-width: 15rem;
+    min-width: 10rem;
+    width: fit-content;
+    border-radius: 3px;
+    display: none;
+}
+
+.error-box p {
+    word-break: normal;
+    text-align: start;
+    margin:0;
+    font-weight: 600;
+    font-size: small;
+
 }

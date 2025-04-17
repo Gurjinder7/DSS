@@ -1,3 +1,5 @@
+
+
 // Function to load posts made by user who is currently logged in
 async function loadPosts() {
 
@@ -121,6 +123,7 @@ const getPosts = async () => {
             console.log(data)
           // Show error message
             // listApiErrors("api_errors", data )
+            showErrorBox('posts-error-box',data)
         }
       } catch (error) {
         console.error("Registration error:", error);
@@ -180,4 +183,16 @@ const searchPostsApi = async () => {
       } catch (error) {
         console.error("Registration error:", error);
       }   
+}
+
+const showErrorBox = (error) => {
+    const errorBox = document.getElementById("posts-error-box");
+    
+    errorBox.innerHTML = `<p>${error.message}</p>`
+    errorBox.style.display = 'block';
+
+    setTimeout(() => {
+    errorBox.innerHTML = "";
+    errorBox.style.display = 'none';
+    }, 3000)
 }

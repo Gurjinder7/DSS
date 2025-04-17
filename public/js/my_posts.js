@@ -277,3 +277,15 @@ const createUserPost = async () => {
         console.error("Registration error:", error);
       }   
 }
+
+const showErrorBox = (error) => {
+    const errorBox = document.getElementById("mypost-error-box");
+    
+    errorBox.innerHTML = `<p>${error.message}</p>`
+    errorBox.style.display = 'block';
+
+    setTimeout(() => {
+    errorBox.innerHTML = "";
+    errorBox.style.display = 'none';
+    }, 3000)
+}

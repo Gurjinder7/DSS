@@ -87,3 +87,15 @@ const getLastTwoPosts = async () => {
 
       }
 }
+
+const showErrorBox = (error) => {
+    const errorBox = document.getElementById("index-error-box");
+    
+    errorBox.innerHTML = `<p>${error.message}</p>`
+    errorBox.style.display = 'block';
+
+    setTimeout(() => {
+    errorBox.innerHTML = "";
+    errorBox.style.display = 'none';
+    }, 3000)
+}

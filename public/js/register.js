@@ -1,3 +1,5 @@
+// import { showErrorBox } from "../../src/utils/api-error-notification";
+
 document.getElementById("regForm").addEventListener("submit", async (e) => {
     e.preventDefault(); 
 
@@ -38,6 +40,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
             console.log(data)
           // Show error message
             listApiErrors("api_errors", data )
+            showErrorBox('register-error-box',{message: 'yo'})
 
         }
       } catch (error) {
@@ -83,3 +86,14 @@ const listApiErrors = (id, apiError) => {
     }
 }
 
+const showErrorBox = (error) => {
+  const errorBox = document.getElementById("register-error-box");
+  
+  errorBox.innerHTML = `<p>${error.message}</p>`
+  errorBox.style.display = 'block';
+
+  setTimeout(() => {
+  errorBox.innerHTML = "";
+  errorBox.style.display = 'none';
+  }, 3000)
+}
