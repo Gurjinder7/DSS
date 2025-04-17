@@ -73,6 +73,7 @@ const makeTablesFirstTime = async () =>{
                       content TEXT NOT NULL CHECK(char_length(content) > 0),
                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
                       username VARCHAR(15) NOT NULL CHECK(char_length(username) > 0 AND char_length(username) <= 15),
+                      likes INTEGER DEFAULT 0, 
                       FOREIGN KEY (username) REFERENCES USERS(username) ON DELETE CASCADE ON UPDATE CASCADE
                       )`).then(() => {
                           console.log('Post table created')

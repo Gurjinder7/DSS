@@ -62,3 +62,28 @@ async function loadLatestPosts() {
 }
 
 loadLatestPosts();
+
+const getLastTwoPosts = async () => {
+    try {
+        const response = await fetch("/api/posts");
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          // Successful login
+          alert("Retrieved all posts")
+    
+        } else {
+            console.log(data)
+          // Show error message
+            // listApiErrors("api_errors", data )
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        // showError("An error occurred. Please try again later.");
+        // listApiErrors("api_errors", error )
+
+      }
+}
