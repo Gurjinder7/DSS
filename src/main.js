@@ -7,6 +7,7 @@ import { AuthController } from "./controllers/auth.controller.js";
 import { checkCommonPassword} from "./middleware/checkCommonPassword.js";
 import  { registerUser } from "./controllers/register.controller.js"
 import { firstTimeClient, createDatabaseIfNone } from "./psql.js";
+import { rateLimiter } from "./middleware/rateLimiter.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,6 +20,9 @@ firstTimeClient.connect().then(async res => {
   console.log(e)
 })
 
+// Store request counts per IP
+const requestCounts = {}
+
 async function main() {
   const app = express();
 
@@ -27,6 +31,7 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.static("public"));
+  app.use(rateLimiter)
 
   // Public routes
   app.get("/login", checkAuthenticated, (req, res) => {
