@@ -158,3 +158,122 @@ function searchPosts() {
 }
 
 document.getElementById("search").addEventListener("keyup", searchPosts);
+
+const searchPostsApi = async () => {
+    try {
+        const response = await fetch("/api/posts/id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
+}
+
+const getUserPosts = async () => {
+    try {
+        const response = await fetch("/api/posts/id");
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
+}
+
+const editUserPost = async () => {
+    try {
+        const response = await fetch("/api/posts/id", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
+}
+
+const deleteUserPost = async () => {
+    try {
+        const response = await fetch("/api/posts/id", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
+}
+
+const createUserPost = async () => {
+    try {
+        const response = await fetch("/api/posts/id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
+}

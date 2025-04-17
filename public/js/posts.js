@@ -12,48 +12,48 @@ async function loadPosts() {
 
     // Remove current posts
     for(let i = 0; i < postList.children.length; i++) {
-        if(postList.children[i].nodeName == "article") {
+        if(postList.children[i].nodeName === "article") {
             postList.removeChild(postList.children[i]);
         }
     }
 
     // Add all recorded posts
     for(let i = 0; i < post_data.length; i++) {
-        let author = post_data[i].username;
-        let timestamp = post_data[i].timestamp;
-        let title = post_data[i].title;
-        let content = post_data[i].content;
-        let postId = post_data[i].postId;
+        const author = post_data[i].username;
+        const timestamp = post_data[i].timestamp;
+        const title = post_data[i].title;
+        const content = post_data[i].content;
+        const postId = post_data[i].postId;
 
-        let postContainer = document.createElement('article');
+        const postContainer = document.createElement('article');
         postContainer.classList.add("post");
-        let fig = document.createElement('figure');
+        const fig = document.createElement('figure');
         postContainer.appendChild(fig);
 
-        let postIdContainer = document.createElement("p");
+        const postIdContainer = document.createElement("p");
         postIdContainer.textContent = postId;
         postIdContainer.hidden = true;
         postId.id = "postId";
         postContainer.appendChild(postIdContainer);
 
-        let img = document.createElement('img');
-        let figcap = document.createElement('figcaption');
+        const img = document.createElement('img');
+        const figcap = document.createElement('figcaption');
         fig.appendChild(img);
         fig.appendChild(figcap);
         
-        let titleContainer = document.createElement('h3');
+        const titleContainer = document.createElement('h3');
         titleContainer.textContent = title;
         figcap.appendChild(titleContainer);
         
-        let usernameContainer = document.createElement('h5');
+        const usernameContainer = document.createElement('h5');
         usernameContainer.textContent = author;
         figcap.appendChild(usernameContainer);
 
-        let timeContainer = document.createElement('h5');
+        const timeContainer = document.createElement('h5');
         timeContainer.textContent = timestamp;
         figcap.appendChild(timeContainer);
 
-        let contentContainer = document.createElement('p');
+        const contentContainer = document.createElement('p');
         contentContainer.textContent = content;
         figcap.appendChild(contentContainer);
 
@@ -102,4 +102,82 @@ function searchPosts() {
 // Search posts whenever the user types
 if(document.getElementById("search")) {
     document.getElementById("search").addEventListener("keyup", searchPosts);
+}
+
+
+const getPosts = async () => {
+    try {
+        const response = await fetch("/api/posts");
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          // Successful login
+          alert("Retrieved all posts")
+    
+        } else {
+            console.log(data)
+          // Show error message
+            // listApiErrors("api_errors", data )
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        // showError("An error occurred. Please try again later.");
+        // listApiErrors("api_errors", error )
+
+      }
+}
+
+
+const filterPosts = async () => {
+    try {
+        const response = await fetch("/api/posts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+
+      }   
+}
+
+const searchPostsApi = async () => {
+    try {
+        const response = await fetch("/api/posts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, name, email }),
+        });
+    
+        const data = await response.json();
+
+        console.log(data)
+    
+        if (response.ok) {
+          alert("Succesfully registered!")
+        } else {
+            console.log(data)
+
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+      }   
 }
