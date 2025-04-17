@@ -51,3 +51,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     showError("An error occurred. Please try again later.");
   }
 });
+
+const showErrorBox = (error) => {
+  const errorBox = document.getElementById("login-error-box");
+  
+  errorBox.innerHTML = `<p>${error.message}</p>`
+  errorBox.style.display = 'block';
+
+  setTimeout(() => {
+  errorBox.innerHTML = "";
+  errorBox.style.display = 'none';
+  }, 3000)
+}

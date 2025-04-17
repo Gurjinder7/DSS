@@ -1,6 +1,6 @@
-import { fileURLToPath } from "url";
-import path from "path";
-import fs from "fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import fs from "node:fs";
 
 export function getView(viewName) {
   const __filename = fileURLToPath(import.meta.url);
