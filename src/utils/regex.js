@@ -21,3 +21,8 @@ export const containOnlyLetters = (pattern) => {
     return checker.test(pattern) && !containsAnySymbol(pattern)
 
 }
+
+export const containsAnySymbol = (pattern) => {
+    const checker = /[~`!@#$%^&*()_\-=+{[\]}\|\:;'"\?\/>\.<,]/g
+    return checker.test(pattern)
+}
