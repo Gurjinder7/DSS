@@ -17,6 +17,13 @@ export const config = {
       cookieName: "refresh_token",
     },
   },
+  db: {
+    user: env("DB_USER"),
+    host: env("DB_HOST"),
+    database: env("DB_DATABASE"),
+    password: env("DB_PASSWORD"),
+    port: env("DB_PORT"),
+  },
   users: [
     {
       id: 1,

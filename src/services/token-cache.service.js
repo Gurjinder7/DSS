@@ -77,5 +77,4 @@ class TokenCacheService {
   }
 }
 
-// Create a singleton instance
 export const tokenCache = new TokenCacheService();

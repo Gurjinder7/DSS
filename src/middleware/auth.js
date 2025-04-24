@@ -1,4 +1,4 @@
-import { AuthService } from "../services/auth.service.js";
+import { authService } from "../api/services/auth.service.js";
 import { config } from "../config/index.js";
 import dotenv from "dotenv";
 
@@ -13,7 +13,7 @@ export const authenticateToken = async (req, res, next) => {
   }
 
   // Verify access token
-  const user = AuthService.verifyAccessToken(accessToken);
+  const user = authService.verifyAccessToken(accessToken);
   if (user) {
     req.user = user;
     return next();
@@ -35,9 +35,9 @@ export const checkAuthenticated = (req, res, next) => {
   }
 
   // Check if either token is valid
-  const accessTokenValid = AuthService.verifyAccessToken(accessToken);
+  const accessTokenValid = authService.verifyAccessToken(accessToken);
   const refreshTokenValid =
-    refreshToken && AuthService.verifyRefreshToken(refreshToken);
+    refreshToken && authService.verifyRefreshToken(refreshToken);
 
   if (accessTokenValid || refreshTokenValid) {
     return res.redirect("/");

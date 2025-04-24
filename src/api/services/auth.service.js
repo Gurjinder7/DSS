@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { config } from "../config/index.js";
-import { tokenCache } from "./token-cache.service.js";
+import { config } from "../../config/index.js";
+import { tokenCache } from "../../services/token-cache.service.js";
+import { userRepository } from "../repositories/user.repository.js";
 
-export class AuthService {
-  static async validateUser(username, password) {
-    const user = config.users.find((u) => u.username === username);
+class AuthService {
+  async login(username, password) {
+    const user = await userRepository.findByUsername(username);
     if (!user) {
       return null;
     }
@@ -15,13 +16,10 @@ export class AuthService {
       return null;
     }
 
-    return {
-      id: user.id,
-      username: user.username,
-    };
+    return user;
   }
 
-  static generateTokens(user) {
+  generateTokens(user) {
     // Remove any existing tokens for this user
     tokenCache.removeUserTokens(user.id);
 
@@ -43,7 +41,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  static verifyAccessToken(token) {
+  verifyAccessToken(token) {
     try {
       // First check if token exists in cache
       if (!tokenCache.isTokenValid(token, false)) {
@@ -61,7 +59,7 @@ export class AuthService {
     }
   }
 
-  static verifyRefreshToken(token) {
+  verifyRefreshToken(token) {
     try {
       // First check if token exists in cache
       if (!tokenCache.isTokenValid(token, true)) {
@@ -79,7 +77,7 @@ export class AuthService {
     }
   }
 
-  static generateAccessTokenFromRefreshToken(refreshToken) {
+  generateAccessTokenFromRefreshToken(refreshToken) {
     const payload = this.verifyRefreshToken(refreshToken);
     if (!payload) return null;
 
@@ -90,7 +88,7 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  static getCookieOptions(isRefreshToken = false) {
+  getCookieOptions(isRefreshToken = false) {
     return {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -99,7 +97,22 @@ export class AuthService {
     };
   }
 
-  static invalidateUserTokens(userId) {
+  invalidateUserTokens(userId) {
     return tokenCache.removeUserTokens(userId);
   }
+
+  async register(username, password, email, name) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await userRepository.create({
+      username,
+      password: hashedPassword,
+      email,
+      name,
+    });
+
+    return user;
+  }
 }
+
+export const authService = new AuthService(userRepository);
