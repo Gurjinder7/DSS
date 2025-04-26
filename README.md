@@ -71,8 +71,3 @@ Posts are loaded from a local JSON file called posts.json. Posts are loaded on t
 # Account Enumeration
 - Don’t give different feedback for invalid username or password, make it the same message
 - Authentication should take the same amount of time with an incorrect username or password
-
-
-SMTP_HOST=smtp.mailersend.net
-SMTP_USER=MS_Wm4G5w@test-q3enl6kkqr742vwr.mlsender.net
-SMTP_PASSWORD=mssp.ADMHDk0.ynrw7gynp7k42k8e.DUCrwUn
