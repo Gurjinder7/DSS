@@ -6,6 +6,7 @@ const env = (key) => process.env[key];
 
 export const config = {
   env: env("NODE_ENV"),
+  disable2FA: env("DISABLE_2FA"),
   password: {
     pepper: env("PASSWORD_PEPPER"),
   },
@@ -20,6 +21,11 @@ export const config = {
       expiresIn: 86400 * 1000, // 24 hours in milliseconds
       cookieName: "refresh_token",
     },
+  },
+  smtp: {
+    host: env("SMTP_HOST"),
+    user: env("SMTP_USER"),
+    password: env("SMTP_PASSWORD"),
   },
   db: {
     user: env("DB_USER"),

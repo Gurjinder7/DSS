@@ -58,6 +58,25 @@ class UserRepository {
     const result = await db.query(query);
     return result.rows[0] || null;
   }
+
+  /**
+   * Finds a user by their ID.
+   * @param {number} id - The ID of the user to search for
+   * @returns {Promise<Object|null>} The user object if found, null otherwise
+   */
+  async findById(id) {
+    const query = {
+      text: `
+        SELECT id, username, email, name, created_at
+        FROM USERS
+        WHERE id = $1
+      `,
+      values: [id],
+    };
+
+    const result = await db.query(query);
+    return result.rows[0] || null;
+  }
 }
 
 export const userRepository = new UserRepository();

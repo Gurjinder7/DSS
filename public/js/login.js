@@ -1,18 +1,57 @@
 // Error message handling
 function showError(message) {
-  const existingError = document.getElementById("login_error");
-  if (existingError) {
-    existingError.remove();
+  const errorBox = document.getElementById("login-error-box");
+  errorBox.innerHTML = `<p>${message}</p>`;
+  errorBox.style.display = "block";
+
+  setTimeout(() => {
+    errorBox.innerHTML = "";
+    errorBox.style.display = "none";
+  }, 3000);
+}
+
+let userId = null;
+let verificationTimer = null;
+
+function startVerificationTimer() {
+  let timeLeft = 300; // 5 minutes in seconds
+  const timerElement = document.getElementById("codeTimer");
+
+  if (verificationTimer) {
+    clearInterval(verificationTimer);
   }
 
-  const errorMsg = document.createElement("p");
-  errorMsg.id = "login_error";
-  errorMsg.textContent = message;
-  errorMsg.classList.add("error");
+  verificationTimer = setInterval(() => {
+    timeLeft--;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `Code expires in: ${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
 
-  const form = document.getElementById("loginForm");
-  const submitButton = form.querySelector('button[type="submit"]');
-  form.insertBefore(errorMsg, submitButton);
+    if (timeLeft <= 0) {
+      clearInterval(verificationTimer);
+      showError("Verification code has expired. Please login again.");
+      hideVerificationForm();
+    }
+  }, 1000);
+}
+
+function showVerificationForm() {
+  document.getElementById("loginForm").style.display = "none";
+  document.getElementById("verificationForm").style.display = "block";
+  document.getElementById("verificationCode").value = "";
+  startVerificationTimer();
+}
+
+function hideVerificationForm() {
+  document.getElementById("loginForm").style.display = "block";
+  document.getElementById("verificationForm").style.display = "none";
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  if (verificationTimer) {
+    clearInterval(verificationTimer);
+  }
 }
 
 // Form submission handler
@@ -40,10 +79,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
-      // Successful login
-      window.location.href = "/";
+      if (data.requiresVerification) {
+        // 2FA is enabled and verification is required
+        userId = data.userId;
+        showVerificationForm();
+      } else {
+        // 2FA is disabled or verification is not required
+        window.location.href = "/";
+      }
     } else {
-      // Show error message
       showError(data.message || "Login failed. Please check your credentials.");
     }
   } catch (error) {
@@ -52,14 +96,37 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   }
 });
 
-const showErrorBox = (error) => {
-  const errorBox = document.getElementById("login-error-box");
+// 2FA Verification form submission handler
+document
+  .getElementById("verificationForm")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  errorBox.innerHTML = `<p>${error.message}</p>`;
-  errorBox.style.display = "block";
+    const code = document.getElementById("verificationCode").value.trim();
 
-  setTimeout(() => {
-    errorBox.innerHTML = "";
-    errorBox.style.display = "none";
-  }, 3000);
-};
+    if (!code || code.length !== 6 || !/^\d+$/.test(code)) {
+      showError("Please enter a valid 6-digit verification code.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/verify-2fa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, code }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = "/";
+      } else {
+        showError(data.message || "Invalid verification code.");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      showError("An error occurred. Please try again later.");
+    }
+  });

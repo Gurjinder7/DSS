@@ -3,6 +3,8 @@ import { userRepository } from "../repositories/user.repository.js";
 import { passwordService } from "./password.service.js";
 import { tokenCache } from "./token-cache.service.js";
 import { tokenService } from "./token.service.js";
+import { twoFactorCodeCache } from "./2fa-code-cache.service.js";
+import { emailService } from "./email.service.js";
 
 /**
  * Service handling authentication-related operations including login, registration,
@@ -111,6 +113,30 @@ class AuthService {
     tokenCache.addToken(userId, newRefreshToken, "refresh");
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  }
+
+  /**
+   * Initiates 2FA process for a user
+   * @param {Object} user - The user object
+   * @returns {Promise<void>}
+   */
+  async initiate2FA(user) {
+    const code = twoFactorCodeCache.storeCode(user.id);
+    await emailService.send2FACode(user.email, code);
+  }
+
+  /**
+   * Verifies 2FA code for a user
+   * @param {string} userId - The user ID
+   * @param {string} code - The 2FA code to verify
+   * @returns {boolean} Whether the code is valid
+   */
+  verify2FACode(userId, code) {
+    const isValid = twoFactorCodeCache.validateCode(userId, code);
+    if (isValid) {
+      twoFactorCodeCache.deleteCode(userId);
+    }
+    return isValid;
   }
 }
 

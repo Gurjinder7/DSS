@@ -3,6 +3,8 @@ import { tokenCache } from "../services/token-cache.service.js";
 import { commonPasswords } from "../../utils/common-passwords.js";
 import { tokenService } from "../services/token.service.js";
 import { sleep } from "../../utils/sleep.js";
+import { userRepository } from "../repositories/user.repository.js";
+import { config } from "../../config/index.js";
 
 /**
  * Controller handling authentication-related operations
@@ -45,11 +47,29 @@ class AuthController {
           .json({ message: "Invalid username or password" });
       }
 
-      const refreshToken = tokenService.generateToken(user, "refresh");
-      const accessToken = tokenService.generateToken(user, "access");
+      // If 2FA is disabled, directly authenticate the user
+      if (config.disable2FA === "true") {
+        const refreshToken = tokenService.generateToken(user, "refresh");
+        const accessToken = tokenService.generateToken(user, "access");
 
-      authService.setCookie(res, accessToken, "access");
-      authService.setCookie(res, refreshToken, "refresh");
+        tokenCache.addToken(user.id, accessToken, "access");
+        tokenCache.addToken(user.id, refreshToken, "refresh");
+
+        authService.setCookie(res, accessToken, "access");
+        authService.setCookie(res, refreshToken, "refresh");
+
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = 3000 - elapsedTime;
+
+        if (remainingTime > 0) {
+          await sleep(remainingTime);
+        }
+
+        return res.status(200).json(user);
+      }
+
+      // If 2FA is enabled, initiate 2FA process
+      await authService.initiate2FA(user);
 
       const elapsedTime = Date.now() - startTime;
       const remainingTime = 3000 - elapsedTime;
@@ -58,16 +78,68 @@ class AuthController {
         await sleep(remainingTime);
       }
 
-      return res.status(200).json(user);
+      return res.status(200).json({ 
+        message: "2FA code sent",
+        userId: user.id,
+        requiresVerification: true,
+      });
     } catch (error) {
       const elapsedTime = Date.now() - startTime;
       const remainingTime = 3000 - elapsedTime;
 
       if (remainingTime > 0) {
-        await new Promise((resolve) => setTimeout(resolve, remainingTime));
+        await sleep(remainingTime);
       }
 
       console.error("Login error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  /**
+   * Verifies 2FA code and completes login
+   * @async
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @returns {Promise<import('express').Response>} Response object with verification status
+   */
+  async verify2FA(req, res) {
+    try {
+      const { userId, code } = req.body;
+
+      if (!userId || !code) {
+        return res.status(400).json({
+          message: "User ID and verification code are required",
+        });
+      }
+
+      const isValid = authService.verify2FACode(userId, code);
+
+      if (!isValid) {
+        return res.status(401).json({
+          message: "Invalid or expired verification code",
+        });
+      }
+
+      const user = await userRepository.findById(userId);
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Generate tokens after successful 2FA
+      const refreshToken = tokenService.generateToken(user, "refresh");
+      const accessToken = tokenService.generateToken(user, "access");
+
+      tokenCache.addToken(userId, accessToken, "access");
+      tokenCache.addToken(userId, refreshToken, "refresh");
+
+      authService.setCookie(res, accessToken, "access");
+      authService.setCookie(res, refreshToken, "refresh");
+
+      return res.status(200).json({ message: "Authentication successful" });
+    } catch (error) {
+      console.error("2FA verification error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

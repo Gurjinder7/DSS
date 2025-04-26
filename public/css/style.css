@@ -438,3 +438,39 @@ legend{
     font-size: small;
 
 }
+
+.verification-info {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+#verificationCode {
+  letter-spacing: 4px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.timer {
+  text-align: center;
+  color: #666;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.verify_btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+.verify_btn:hover {
+  background-color: #45a049;
+}
