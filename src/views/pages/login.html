@@ -18,7 +18,13 @@
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required />
         </div>
-        <button class="login_btn" type="submit">Login</button>
+        <div class="align-centre">
+          <button class="login_btn" type="submit">Login</button>
+
+        </div>
+        <div class="align-centre" style="margin-top: 1rem;">
+          <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
       </form>
 
       <!-- New 2FA verification form (hidden by default) -->
@@ -39,6 +45,6 @@
         
     </div>
     <script src="/js/login.js"></script>
-    <!-- <script src="/js/autoLogout.js"></script> -->
+    <script src="/js/autoLogout.js"></script>
   </body>
 </html>

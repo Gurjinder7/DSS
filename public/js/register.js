@@ -76,6 +76,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
   if (hasError) return;
 
   try {
+    showLoader();
     const response = await fetch("/api/register", {
       method: "POST",
       headers: {
@@ -100,10 +101,12 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
       } else {
         showErrorBox("An unexpected error occurred. Please try again later.");
       }
+      hideLoader();
     }
   } catch (error) {
     console.error("Registration error:", error);
     showErrorBox("An error occurred. Please try again later.");
+    hideLoader();
   }
 });
 
