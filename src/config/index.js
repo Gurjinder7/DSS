@@ -5,15 +5,19 @@ dotenv.config();
 const env = (key) => process.env[key];
 
 export const config = {
+  env: env("NODE_ENV"),
+  password: {
+    pepper: env("PASSWORD_PEPPER"),
+  },
   jwt: {
-    accessToken: {
+    access: {
       secret: env("JWT_ACCESS_SECRET"),
-      expiresIn: "5m",
+      expiresIn: 300 * 1000, // 5 minutes in milliseconds
       cookieName: "access_token",
     },
-    refreshToken: {
+    refresh: {
       secret: env("JWT_REFRESH_SECRET"),
-      expiresIn: "1d",
+      expiresIn: 86400 * 1000, // 24 hours in milliseconds
       cookieName: "refresh_token",
     },
   },
@@ -24,11 +28,4 @@ export const config = {
     password: env("DB_PASSWORD"),
     port: env("DB_PORT"),
   },
-  users: [
-    {
-      id: 1,
-      username: "admin",
-      password: "$2b$10$r.g1mBEjNEu3vnFdFCLJPu6BGE6WVh4t7gPgaaxaSkE.j3dHPeZmC",
-    },
-  ],
 };

@@ -54,12 +54,12 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
 const showErrorBox = (error) => {
   const errorBox = document.getElementById("login-error-box");
-  
-  errorBox.innerHTML = `<p>${error.message}</p>`
-  errorBox.style.display = 'block';
+
+  errorBox.innerHTML = `<p>${error.message}</p>`;
+  errorBox.style.display = "block";
 
   setTimeout(() => {
-  errorBox.innerHTML = "";
-  errorBox.style.display = 'none';
-  }, 3000)
-}
+    errorBox.innerHTML = "";
+    errorBox.style.display = "none";
+  }, 3000);
+};

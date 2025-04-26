@@ -1,66 +1,64 @@
 // Function to add the latest 2 posts to the home page
 async function loadLatestPosts() {
+    try {
+        const response = await fetch("/api/posts");
+        const posts = await response.json();
 
-    // Load posts data
-    const post_response = await fetch("../json/posts.json");
-    const post_data = await post_response.json();
-
-    const login_response = await fetch("../json/login_attempt.json");
-    const login_data = await login_response.json();
-
-    // Remove current posts from page
-    let postList = document.getElementById('postsList');
-
-    for(let i = 0; i < postList.children.length; i++) {
-        if(postList.children[i].nodeName == "article") {
-            postList.removeChild(postList.children[i]);
+        if (!response.ok) {
+            throw new Error(posts.message || "Failed to load posts");
         }
-    }
 
-    // Load latest 2 posts
-    for(let i = post_data.length - 1; i > post_data.length - 3; i--) {
-        let author = post_data[i].username;
-        let timestamp = post_data[i].timestamp;
-        let title = post_data[i].title;
-        let content = post_data[i].content;
-        let postId = post_data[i].postId;
+        // Remove current posts from page
+        const postList = document.getElementById('postsList');
+        const articles = postList.querySelectorAll("article");
+        articles.forEach(article => article.remove());
 
-        let postContainer = document.createElement('article');
-        postContainer.classList.add("post");
-        let fig = document.createElement('figure');
-        postContainer.appendChild(fig);
+        // Get the last 2 posts (newest posts)
+        const latestPosts = posts.slice(0, 2);
 
-        let postIdContainer = document.createElement("p");
-        postIdContainer.textContent = postId;
-        postIdContainer.hidden = true;
-        postId.id = "postId";
-        postContainer.appendChild(postIdContainer);
+        // Load latest 2 posts
+        latestPosts.forEach(post => {
+            const postContainer = document.createElement('article');
+            postContainer.classList.add("post");
+            
+            const fig = document.createElement('figure');
+            postContainer.appendChild(fig);
 
-        let img = document.createElement('img');
-        let figcap = document.createElement('figcaption');
-        fig.appendChild(img);
-        fig.appendChild(figcap);
-        
-        let titleContainer = document.createElement('h3');
-        titleContainer.textContent = title;
-        figcap.appendChild(titleContainer);
-        
-        let usernameContainer = document.createElement('h5');
-        usernameContainer.textContent = author;
-        figcap.appendChild(usernameContainer);
+            const figcap = document.createElement('figcaption');
+            fig.appendChild(figcap);
+            
+            const titleContainer = document.createElement('h3');
+            titleContainer.textContent = post.title;
+            figcap.appendChild(titleContainer);
+            
+            const usernameContainer = document.createElement('h5');
+            usernameContainer.textContent = post.username;
+            figcap.appendChild(usernameContainer);
 
-        let timeContainer = document.createElement('h5');
-        timeContainer.textContent = timestamp;
-        figcap.appendChild(timeContainer);
+            const timeContainer = document.createElement('h5');
+            timeContainer.textContent = new Date(post.created_at).toLocaleString();
+            figcap.appendChild(timeContainer);
 
-        let contentContainer = document.createElement('p');
-        contentContainer.textContent = content;
-        figcap.appendChild(contentContainer);
+            const contentContainer = document.createElement('p');
+            contentContainer.textContent = post.content;
+            figcap.appendChild(contentContainer);
 
-        postList.insertBefore(postContainer, postList.querySelectorAll("section > p")[1]);
+            const likesContainer = document.createElement('div');
+            likesContainer.classList.add('likes-container');
+            likesContainer.innerHTML = `<i class="fa fa-heart"></i> <span>${post.likes || 0}</span>`;
+            figcap.appendChild(likesContainer);
+
+            // Insert before the "See More Posts" link
+            const seeMoreLink = postList.querySelector(".link_btn").parentElement;
+            postList.insertBefore(postContainer, seeMoreLink);
+        });
+    } catch (error) {
+        console.error("Error loading posts:", error);
+        showErrorBox({ message: "Failed to load latest posts. Please try again later." });
     }
 }
 
+// Load latest posts when page loads
 loadLatestPosts();
 
 const getLastTwoPosts = async () => {
@@ -91,11 +89,11 @@ const getLastTwoPosts = async () => {
 const showErrorBox = (error) => {
     const errorBox = document.getElementById("index-error-box");
     
-    errorBox.innerHTML = `<p>${error.message}</p>`
+    errorBox.innerHTML = `<p>${error.message}</p>`;
     errorBox.style.display = 'block';
 
     setTimeout(() => {
-    errorBox.innerHTML = "";
-    errorBox.style.display = 'none';
-    }, 3000)
-}
+        errorBox.innerHTML = "";
+        errorBox.style.display = 'none';
+    }, 3000);
+};

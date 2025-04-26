@@ -1,9 +1,24 @@
 import { authService } from "../services/auth.service.js";
-import { config } from "../../config/index.js";
-import { tokenCache } from "../../services/token-cache.service.js";
+import { tokenCache } from "../services/token-cache.service.js";
 import { commonPasswords } from "../../utils/common-passwords.js";
+import { tokenService } from "../services/token.service.js";
+import { sleep } from "../../utils/sleep.js";
 
+/**
+ * Controller handling authentication-related operations
+ * @class AuthController
+ */
 class AuthController {
+  /**
+   * Handles user login
+   * @async
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @param {Object} req.body - Request body
+   * @param {string} req.body.username - User's username
+   * @param {string} req.body.password - User's password
+   * @returns {Promise<import('express').Response>} Response object with login status
+   */
   async login(req, res) {
     const startTime = Date.now();
     try {
@@ -30,20 +45,11 @@ class AuthController {
           .json({ message: "Invalid username or password" });
       }
 
-      // This will automatically invalidate any existing tokens
-      const { accessToken, refreshToken } = authService.generateTokens(user);
+      const refreshToken = tokenService.generateToken(user, "refresh");
+      const accessToken = tokenService.generateToken(user, "access");
 
-      // Set cookies
-      res.cookie(
-        config.jwt.accessToken.cookieName,
-        accessToken,
-        authService.getCookieOptions(false)
-      );
-      res.cookie(
-        config.jwt.refreshToken.cookieName,
-        refreshToken,
-        authService.getCookieOptions(true)
-      );
+      authService.setCookie(res, accessToken, "access");
+      authService.setCookie(res, refreshToken, "refresh");
 
       const elapsedTime = Date.now() - startTime;
       const remainingTime = 3000 - elapsedTime;
@@ -52,7 +58,7 @@ class AuthController {
         await sleep(remainingTime);
       }
 
-      return res.status(200).json({ message: "Login successful" });
+      return res.status(200).json(user);
     } catch (error) {
       const elapsedTime = Date.now() - startTime;
       const remainingTime = 3000 - elapsedTime;
@@ -66,89 +72,110 @@ class AuthController {
     }
   }
 
+  /**
+   * Refreshes user's authentication tokens
+   * @async
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @returns {Promise<import('express').Response>} Response object with refresh status
+   */
   async refresh(req, res) {
     try {
-      const refreshToken = req.cookies[config.jwt.refreshToken.cookieName];
+      const refreshToken = authService.getCookie(req, "refresh");
 
       if (!refreshToken) {
         return res.status(401).json({ message: "Refresh token required" });
       }
 
-      // Get user ID from refresh token to invalidate old tokens
-      const userId = tokenCache.getUserIdFromToken(refreshToken, true);
-      if (!userId) {
-        res.clearCookie(config.jwt.accessToken.cookieName);
-        res.clearCookie(config.jwt.refreshToken.cookieName);
-        return res.status(401).json({ message: "Invalid refresh token" });
-      }
-
-      const tokens =
-        authService.generateAccessTokenFromRefreshToken(refreshToken);
-
+      const tokens = authService.refresh(refreshToken);
       if (!tokens) {
-        // Clear cookies and invalidate all tokens for this user
-        res.clearCookie(config.jwt.accessToken.cookieName);
-        res.clearCookie(config.jwt.refreshToken.cookieName);
-        authService.invalidateUserTokens(userId);
-        return res.status(401).json({ message: "Invalid refresh token" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Set both new tokens
-      res.cookie(
-        config.jwt.accessToken.cookieName,
-        tokens.accessToken,
-        authService.getCookieOptions(false)
-      );
-      res.cookie(
-        config.jwt.refreshToken.cookieName,
-        tokens.refreshToken,
-        authService.getCookieOptions(true)
-      );
+      authService.setCookie(res, tokens.accessToken, "access");
+      authService.setCookie(res, tokens.refreshToken, "refresh");
 
-      return res.status(200).json({ message: "Tokens refreshed successfully" });
+      return res.status(200).json({ message: "success" });
     } catch (error) {
       console.error("Refresh error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
 
+  /**
+   * Handles user logout by clearing tokens and cookies
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @returns {import('express').Response} Response object with logout status
+   */
   logout(req, res) {
-    const accessToken = req.cookies[config.jwt.accessToken.cookieName];
-    if (accessToken) {
-      const userId = tokenCache.getUserIdFromToken(accessToken, false);
-      if (userId) {
-        authService.invalidateUserTokens(userId);
-      }
+    const accessToken = authService.getCookie(req, "access");
+    authService.clearCookie(res, "access");
+    authService.clearCookie(res, "refresh");
+
+    if (!accessToken) {
+      return res.status(200).json({ message: "success" });
     }
 
-    res.clearCookie(config.jwt.accessToken.cookieName);
-    res.clearCookie(config.jwt.refreshToken.cookieName);
-    return res.status(200).json({ message: "Logout successful" });
+    const decoded = tokenService.verifyToken(accessToken, "access", true);
+    if (!decoded) {
+      return res.status(200).json({ message: "success" });
+    }
+
+    const userId = decoded.user.id;
+
+    tokenCache.deleteToken(userId, "access");
+    tokenCache.deleteToken(userId, "refresh");
+
+    return res.redirect("/login");
   }
 
+  /**
+   * Handles new user registration
+   * @async
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @param {Object} req.body - Request body
+   * @param {string} req.body.username - User's username
+   * @param {string} req.body.password - User's password
+   * @param {string} req.body.email - User's email
+   * @param {string} req.body.name - User's name
+   * @returns {Promise<import('express').Response>} Response object with registration status
+   * @throws {Error} When username or email already exists
+   */
   async register(req, res) {
     try {
       const { username, password, email, name } = req.body;
 
       // Password validation rules
       if (password.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 8 characters long" });
       }
 
       if (!/[A-Z]/.test(password)) {
-        return res.status(400).json({ message: "Password must contain at least one uppercase letter" });
+        return res.status(400).json({
+          message: "Password must contain at least one uppercase letter",
+        });
       }
 
       if (!/[a-z]/.test(password)) {
-        return res.status(400).json({ message: "Password must contain at least one lowercase letter" });
+        return res.status(400).json({
+          message: "Password must contain at least one lowercase letter",
+        });
       }
 
       if (!/[0-9]/.test(password)) {
-        return res.status(400).json({ message: "Password must contain at least one number" });
+        return res
+          .status(400)
+          .json({ message: "Password must contain at least one number" });
       }
 
       if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        return res.status(400).json({ message: "Password must contain at least one special character" });
+        return res.status(400).json({
+          message: "Password must contain at least one special character",
+        });
       }
 
       const isCommon = commonPasswords.filter((cPass) => cPass === password);
@@ -157,9 +184,9 @@ class AuthController {
         return res.status(400).json({ message: "Cannot use common password" });
       }
 
-      const user = await authService.register(username, password, email, name);
+      await authService.register(username, password, email, name);
 
-      return res.status(200).json({ user });
+      return res.status(201).json({ message: "success" });
     } catch (e) {
       if (
         e.message === "Username already exists" ||

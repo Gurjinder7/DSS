@@ -29,7 +29,7 @@ functional login, plus search, add, edit and delete of posts using local JSON fi
 At the moment, logins are hardcoded. The username is "username" and the password is "password" in plaintext.
 
 # Handling Posts
-Posts can be searched using the search bar. See my_posts.js or posts.js for the function that handles this.
+Posts can be searched using the search bar. See my-posts.js or posts.js for the function that handles this.
 Posts can be edited or deleted from the "My Posts" page. Editing posts is handled by deleting the original post and inserting the new post in its place. See app.js for the POST request which handles this.
 
 # Loading Posts

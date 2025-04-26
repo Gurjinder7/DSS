@@ -1,108 +1,82 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { config } from "../../config/index.js";
-import { tokenCache } from "../../services/token-cache.service.js";
 import { userRepository } from "../repositories/user.repository.js";
+import { passwordService } from "./password.service.js";
+import { tokenCache } from "./token-cache.service.js";
+import { tokenService } from "./token.service.js";
 
+/**
+ * Service handling authentication-related operations including login, registration,
+ * and cookie management for JWT tokens.
+ */
 class AuthService {
+  /**
+   * Authenticates a user with their username and password.
+   * @param {string} username - The username of the user trying to log in
+   * @param {string} password - The plain text password of the user
+   * @returns {Promise<Object|null>} The user object if authentication is successful, null otherwise
+   */
   async login(username, password) {
     const user = await userRepository.findByUsername(username);
     if (!user) {
       return null;
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await passwordService.compare(
+      password,
+      user.password
+    );
     if (!validPassword) {
       return null;
     }
 
+    delete user.password;
+
     return user;
   }
 
-  generateTokens(user) {
-    // Remove any existing tokens for this user
-    tokenCache.removeUserTokens(user.id);
-
-    const accessToken = jwt.sign(
-      { id: user.id, username: user.username, type: "access" },
-      config.jwt.accessToken.secret,
-      { expiresIn: config.jwt.accessToken.expiresIn }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user.id, type: "refresh" },
-      config.jwt.refreshToken.secret,
-      { expiresIn: config.jwt.refreshToken.expiresIn }
-    );
-
-    // Store new tokens in cache
-    tokenCache.addTokens(user.id, accessToken, refreshToken);
-
-    return { accessToken, refreshToken };
+  /**
+   * Sets a cookie for a JWT token
+   * @param {Object} res - The response object from the controller
+   * @param {string} token - The JWT token to set
+   * @param {"access"|"refresh"} type - The type of token (access or refresh)
+   */
+  setCookie(res, token, type) {
+    const cookieName = config.jwt[type].cookieName;
+    const cookieOptions = tokenService.getCookieOptions(type);
+    res.cookie(cookieName, token, cookieOptions);
   }
 
-  verifyAccessToken(token) {
-    try {
-      // First check if token exists in cache
-      if (!tokenCache.isTokenValid(token, false)) {
-        return null;
-      }
-
-      const decoded = jwt.verify(token, config.jwt.accessToken.secret);
-      // Verify that this is an access token
-      if (decoded.type !== "access") {
-        return null;
-      }
-      return decoded;
-    } catch (err) {
-      return null;
-    }
+  /**
+   * Clears a cookie for a JWT token
+   * @param {Object} res - The response object from the controller
+   * @param {"access"|"refresh"} type - The type of token (access or refresh)
+   */
+  clearCookie(res, type) {
+    const cookieName = config.jwt[type].cookieName;
+    res.clearCookie(cookieName);
   }
 
-  verifyRefreshToken(token) {
-    try {
-      // First check if token exists in cache
-      if (!tokenCache.isTokenValid(token, true)) {
-        return null;
-      }
-
-      const decoded = jwt.verify(token, config.jwt.refreshToken.secret);
-      // Verify that this is a refresh token
-      if (decoded.type !== "refresh") {
-        return null;
-      }
-      return decoded;
-    } catch (err) {
-      return null;
-    }
+  /**
+   * Retrieves a cookie for a JWT token
+   * @param {Object} req - The request object from the controller
+   * @param {"access"|"refresh"} type - The type of token (access or refresh)
+   * @returns {string|null} The value of the cookie or null if it doesn't exist
+   */
+  getCookie(req, type) {
+    const cookieName = config.jwt[type].cookieName;
+    return req.cookies[cookieName];
   }
 
-  generateAccessTokenFromRefreshToken(refreshToken) {
-    const payload = this.verifyRefreshToken(refreshToken);
-    if (!payload) return null;
-
-    const user = config.users.find((u) => u.id === payload.id);
-    if (!user) return null;
-
-    // Generate both new access and refresh tokens
-    return this.generateTokens(user);
-  }
-
-  getCookieOptions(isRefreshToken = false) {
-    return {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: isRefreshToken ? 24 * 60 * 60 * 1000 : 60 * 60 * 1000, // 24 hours or 1 hour
-    };
-  }
-
-  invalidateUserTokens(userId) {
-    return tokenCache.removeUserTokens(userId);
-  }
-
+  /**
+   * Registers a new user in the system.
+   * @param {string} username - The username for the new user
+   * @param {string} password - The plain text password that will be hashed
+   * @param {string} email - The email address of the new user
+   * @param {string} name - The full name of the new user
+   * @returns {Promise<Object>} The created user object
+   */
   async register(username, password, email, name) {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await passwordService.hash(password);
 
     const user = await userRepository.create({
       username,
@@ -112,6 +86,31 @@ class AuthService {
     });
 
     return user;
+  }
+
+  /**
+   * Refreshes the access and refresh tokens for a user
+   * @param {string} refreshToken - The current refresh token to validate
+   * @returns {{accessToken: string, refreshToken: string}|null} Object containing new tokens if successful, null if refresh token is invalid
+   */
+  refresh(refreshToken) {
+    const decoded = tokenService.verifyToken(refreshToken, "refresh");
+    if (!decoded) {
+      return null;
+    }
+
+    const userId = decoded.user.id;
+
+    tokenCache.deleteToken(userId, "refresh");
+    tokenCache.deleteToken(userId, "access");
+
+    const newAccessToken = tokenService.generateToken(userId, "access");
+    const newRefreshToken = tokenService.generateToken(userId, "refresh");
+
+    tokenCache.addToken(userId, newAccessToken, "access");
+    tokenCache.addToken(userId, newRefreshToken, "refresh");
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
 }
 

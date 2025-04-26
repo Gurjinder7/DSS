@@ -1,14 +1,16 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { rateLimiter } from "./middleware/rateLimiter.js";
+import { rateLimiter } from "./api/middlewares/rateLimiter.js";
 import views from "./views/router.js";
 import api from "./api/router.js";
-
+import cors from "cors";
 // Store request counts per IP
 const requestCounts = {};
 
 async function main() {
   const app = express();
+
+  app.use(cors());
 
   // Middleware
   app.use(express.json());

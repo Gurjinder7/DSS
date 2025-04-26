@@ -1,6 +1,19 @@
 import { db } from "../../db/index.js";
 
+/**
+ * Repository class for handling user-related database operations.
+ */
 class UserRepository {
+  /**
+   * Creates a new user in the database.
+   * @param {Object} params - The user creation parameters
+   * @param {string} params.username - The username of the user
+   * @param {string} params.email - The email address of the user
+   * @param {string} params.name - The full name of the user
+   * @param {string} params.password - The hashed password of the user
+   * @returns {Promise<Object>} The created user object with id, username, email, name, and created_at
+   * @throws {Error} When username or email already exists
+   */
   async create({ username, email, name, password }) {
     const query = {
       text: `
@@ -27,10 +40,15 @@ class UserRepository {
     }
   }
 
+  /**
+   * Finds a user by their username.
+   * @param {string} username - The username to search for
+   * @returns {Promise<Object|null>} The user object with id, username, and password if found, null otherwise
+   */
   async findByUsername(username) {
     const query = {
       text: `
-        SELECT id, username, password
+        SELECT id, username, password, email, name, created_at
         FROM USERS
         WHERE username = $1
       `,
