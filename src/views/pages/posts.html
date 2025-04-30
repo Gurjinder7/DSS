@@ -3,20 +3,17 @@
   <head>
     <title>The Auto Geek</title>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="{{CSRF_TOKEN}}" />
     <link rel="icon" type="image/x-icon" href="../imgs/foodie.ico" />
     <link rel="stylesheet" href="../css/style.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
-    <script src="../js/posts.js" defer></script>
-    <script src="../js/main.js" defer></script>
   </head>
   <body>
     <header>
-      <a href="/"
-        ><img id="logo" src="../imgs/car-svgrepo-com.png"
-      /></a>
+      <a href="/"><img id="logo" src="../imgs/car-svgrepo-com.png" /></a>
       <h1>The Auto Geek</h1>
       <div class="dropdown">
         <button id="login_link" href="#">
@@ -53,4 +50,8 @@
     </main>
     <div class="error-box" id="posts-error-box"></div>
   </body>
+
+  <script src="/js/posts.js" defer></script>
+  <script src="/js/main.js" defer></script>
+  <script src="/js/getCsrfToken.js"></script>
 </html>

@@ -1,7 +1,12 @@
 // Function to load posts made by user who is currently logged in
 async function loadPosts() {
     try {
-        const response = await fetch("/api/posts");
+        const response = await fetch("/api/posts", {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
+            }
+        });
         const posts = await response.json();
 
         if (!response.ok) {
@@ -74,7 +79,8 @@ async function deletePost(e) {
         const response = await fetch(`/api/posts/${postId}`, {
             method: 'DELETE',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
             }
         });
 
@@ -129,7 +135,8 @@ document.getElementById("postForm").addEventListener("submit", async function(e)
         const response = await fetch(url, {
             method: method,
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
             },
             body: JSON.stringify({ title, content })
         });

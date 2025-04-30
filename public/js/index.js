@@ -1,7 +1,12 @@
 // Function to add the latest 2 posts to the home page
 async function loadLatestPosts() {
     try {
-        const response = await fetch("/api/posts");
+        const response = await fetch("/api/posts", {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
+            }
+        });
         const posts = await response.json();
 
         if (!response.ok) {
@@ -63,7 +68,12 @@ loadLatestPosts();
 
 const getLastTwoPosts = async () => {
     try {
-        const response = await fetch("/api/posts");
+        const response = await fetch("/api/posts", {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
+            }
+        });
     
         const data = await response.json();
 
