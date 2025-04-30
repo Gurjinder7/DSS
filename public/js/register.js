@@ -47,31 +47,6 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
     showError("password_error", "Password must be at least 8 characters long");
     hasError = true;
   }
-  if (!/[A-Z]/.test(password)) {
-    showError(
-      "password_error",
-      "Password must contain at least one uppercase letter"
-    );
-    hasError = true;
-  }
-  if (!/[a-z]/.test(password)) {
-    showError(
-      "password_error",
-      "Password must contain at least one lowercase letter"
-    );
-    hasError = true;
-  }
-  if (!/[0-9]/.test(password)) {
-    showError("password_error", "Password must contain at least one number");
-    hasError = true;
-  }
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    showError(
-      "password_error",
-      "Password must contain at least one special character"
-    );
-    hasError = true;
-  }
 
   if (hasError) return;
 
