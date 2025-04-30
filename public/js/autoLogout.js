@@ -53,11 +53,12 @@ const logout = async () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "X-CSRF-Token": getCSRFToken()
           },
         //   body: JSON.stringify({ username, password }),
         });
     
-        const data = await response.json();
+        // const data = await response.json();
     
         if (response.ok) {
             destroyListeners()
@@ -65,7 +66,7 @@ const logout = async () => {
             alert('You are being logged out!')
             localStorage.clear()
             sessionStorage.clear()
-            window.location.href = "/login";
+            window.location.reload()
         
           }
             else {
