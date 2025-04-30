@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{CSRF_TOKEN}}" />
     <title>Login</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
@@ -20,27 +21,40 @@
         </div>
         <div class="align-centre">
           <button class="login_btn" type="submit">Login</button>
-
         </div>
-        <div class="align-centre" style="margin-top: 1rem;">
+        <div class="align-centre" style="margin-top: 1rem">
           <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
       </form>
 
       <!-- New 2FA verification form (hidden by default) -->
-      <form id="verificationForm" class="log-reg-form" style="display: none;">
+      <form id="verificationForm" class="log-reg-form" style="display: none">
         <h2>2FA Verification</h2>
-        <p class="verification-info">Please enter the verification code sent to your email.</p>
+        <p class="verification-info">
+          Please enter the verification code sent to your email.
+        </p>
         <div class="form-group">
           <label for="verificationCode">Verification Code:</label>
-          <input type="text" id="verificationCode" name="verificationCode" 
-                 maxlength="6" pattern="[0-9]{6}" required 
-                 placeholder="Enter 6-digit code" />
+          <input
+            type="text"
+            id="verificationCode"
+            name="verificationCode"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            required
+            placeholder="Enter 6-digit code"
+          />
         </div>
         <button class="verify_btn" type="submit">Verify</button>
         <p class="timer" id="codeTimer">Code expires in: 5:00</p>
       </form>
     </div>
+    <div class="error-box" id="login-error-box"></div>
+  </body>
+
+  <script src="/js/login.js"></script>
+  <script src="/js/autoLogout.js"></script>
+  <script src="/js/getCsrfToken.js"></script>
     <div class="error-box" id="login-error-box">
         
     </div>

@@ -2,8 +2,12 @@ import express from "express";
 import { authController } from "./controllers/auth.controller.js";
 import { postController } from "./controllers/post.controller.js";
 import { requireAuth, requireNoAuth } from "./middlewares/auth.js";
+import { validateCSRF } from "./middlewares/csrf.js";
 
 const router = express.Router();
+
+// CSRF validation middleware
+router.use(validateCSRF);
 
 // Auth routes
 router.post("/login", authController.login);

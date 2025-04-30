@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{CSRF_TOKEN}}" />
     <title>Register</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
@@ -76,7 +77,7 @@
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required />
           <p class="info">Password requirements:</p>
-          <ul class="info" style="margin-top: 0;">
+          <ul class="info" style="margin-top: 0">
             <li>Minimum 8 characters</li>
             <li>At least one uppercase letter</li>
             <li>At least one lowercase letter</li>
@@ -88,7 +89,7 @@
         <div class="align-centre">
           <button class="login_btn" type="submit">Register</button>
         </div>
-        <div class="align-centre" style="margin-top: 1rem;">
+        <div class="align-centre" style="margin-top: 1rem">
           <p>Already have an account? <a href="/login">Login here</a></p>
         </div>
       </form>
@@ -98,7 +99,9 @@
     <div class="loader-container">
       <div class="loader"></div>
     </div>
-    <script src="/js/register.js"></script>
-    <script src="/js/loader.js"></script>
   </body>
+
+  <script src="/js/register.js"></script>
+  <script src="/js/loader.js"></script>
+  <script src="/js/getCsrfToken.js"></script>
 </html>

@@ -3,11 +3,9 @@
   <head>
     <title>The Auto Geek</title>
     <meta charset="utf-8" />
+    <meta name="csrf-token" content="{{CSRF_TOKEN}}" />
     <link rel="icon" type="image/x-icon" href="../imgs/foodie.ico" />
     <link rel="stylesheet" href="../css/style.css" />
-
-    <script src="../js/index.js" defer></script>
-    <script src="../js/main.js" defer></script>
   </head>
   <body>
     <header>
@@ -45,9 +43,7 @@
         <p><a class="link_btn" href="/posts">See More Posts</a></p>
       </section>
     </main>
-    <div class="error-box" id="index-error-box">
-        
-    </div>
+    <div class="error-box" id="index-error-box"></div>
     <footer></footer>
     <div class="loader-container">
       <div class="loader"></div>
@@ -56,4 +52,9 @@
     <script src="/js/autoLogout.js"></script>
 
   </body>
+
+  <script src="/js/autoLogout.js"></script>
+  <script src="/js/index.js" defer></script>
+  <script src="/js/main.js" defer></script>
+  <script src="/js/getCsrfToken.js"></script>
 </html>

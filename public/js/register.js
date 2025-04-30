@@ -81,6 +81,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRF-Token": getCSRFToken()
       },
       body: JSON.stringify({ username, password, name, email }),
     });

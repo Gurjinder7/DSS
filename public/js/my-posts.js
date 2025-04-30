@@ -77,7 +77,8 @@ async function deletePost(e) {
         const response = await fetch(`/api/posts/${postId}`, {
             method: 'DELETE',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
             }
         });
 
@@ -134,7 +135,8 @@ document.getElementById("postForm").addEventListener("submit", async (e) => {
         const response = await fetch(url, {
             method: method,
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
             },
             body: JSON.stringify({ title, content })
         });
