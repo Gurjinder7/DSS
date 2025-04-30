@@ -23,7 +23,7 @@
           Username <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-content">
-          <a id="logout_btn" href="/login">Log out</a>
+          <a id="logout_btn" class="align-centre" href="#" onclick="logout()">Logout</a>
         </div>
       </div>
     </header>
@@ -52,5 +52,11 @@
       </section>
     </main>
     <div class="error-box" id="posts-error-box"></div>
+    <div class="loader-container">
+      <div class="loader"></div>
+    </div>
+    <script src="/js/loader.js"></script>
+    <script src="/js/autoLogout.js"></script>
+
   </body>
 </html>

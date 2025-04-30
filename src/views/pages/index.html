@@ -14,11 +14,11 @@
       <a href="/"><img id="logo" src="../imgs/car-svgrepo-com.png" /></a>
       <h1>The Auto Geek</h1>
       <div class="dropdown">
-        <button id="login_link" href="#">
+        <button id="login_link">
           Username <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-content">
-          <a id="logout_btn" href="/login">Log out</a>
+          <a id="logout_btn" class="align-centre" href="#" onclick="logout()">Logout</a>
         </div>
       </div>
     </header>
@@ -49,6 +49,10 @@
         
     </div>
     <footer></footer>
+    <div class="loader-container">
+      <div class="loader"></div>
+    </div>
+    <script src="/js/loader.js"></script>
     <script src="/js/autoLogout.js"></script>
 
   </body>

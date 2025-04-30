@@ -66,8 +66,9 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     showError("Please fill in both username and password fields.");
     return;
   }
-
   try {
+    showLoader()
+
     const response = await fetch("/api/login", {
       method: "POST",
       headers: {
@@ -79,6 +80,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     const data = await response.json();
 
     if (response.ok) {
+      console.log(data)
+      sessionStorage.setItem('username', data.username)
       if (data.requiresVerification) {
         // 2FA is enabled and verification is required
         userId = data.userId;
@@ -94,6 +97,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     console.error("Login error:", error);
     showError("An error occurred. Please try again later.");
   }
+  hideLoader()
 });
 
 // 2FA Verification form submission handler

@@ -3,7 +3,7 @@ async function displayUsername() {
     const response = await fetch("../json/login_attempt.json");
     const user_data = await response.json();
 
-    document.querySelector("#login_link").textContent = user_data.username;
+    document.querySelector("#login_link").textContent = sessionStorage.getItem('username');
 }
 
 displayUsername();
