@@ -1,12 +1,8 @@
 // Function to load posts made by user who is currently logged in
 async function loadPosts() {
     try {
-        const response = await fetch("/api/posts", {
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": getCSRFToken()
-            }
-        });
+        showLoader()
+        const response = await fetch("/api/posts");
         const posts = await response.json();
 
         if (!response.ok) {
@@ -65,6 +61,7 @@ async function loadPosts() {
         console.error("Error loading posts:", error);
         showErrorBox({ message: "Failed to load posts. Please try again later." });
     }
+    hideLoader()
 }
 
 // Load posts when page loads
@@ -73,6 +70,7 @@ loadPosts();
 // Function to remove a post
 async function deletePost(e) {
     try {
+        showLoader()
         const postContainer = e.target.closest('article');
         const postId = postContainer.dataset.postId;
 
@@ -96,6 +94,7 @@ async function deletePost(e) {
         console.error("Error deleting post:", error);
         showErrorBox({ message: error.message || "Failed to delete post. Please try again later." });
     }
+    hideLoader()
 }
 
 // Function to edit post
@@ -115,7 +114,7 @@ function editPost(e) {
 }
 
 // Handle form submission for creating/editing posts
-document.getElementById("postForm").addEventListener("submit", async function(e) {
+document.getElementById("postForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const title = document.getElementById("title_field").value;
@@ -123,6 +122,7 @@ document.getElementById("postForm").addEventListener("submit", async function(e)
     const postId = document.getElementById("postId").value;
 
     try {
+        showLoader()
         let url = '/api/posts';
         let method = 'POST';
 
@@ -159,6 +159,7 @@ document.getElementById("postForm").addEventListener("submit", async function(e)
         console.error("Error saving post:", error);
         showErrorBox({ message: error.message || "Failed to save post. Please try again later." });
     }
+    hideLoader()
 });
 
 // Function to filter posts on page using search bar
