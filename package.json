@@ -19,10 +19,6 @@
   },
   "homepage": "https://github.com/Gurjinder7/DSS#readme",
   "dependencies": {
-    "@node-minify/clean-css": "^9.0.1",
-    "@node-minify/core": "^9.0.2",
-    "@node-minify/html-minifier": "^9.0.1",
-    "@node-minify/terser": "^9.0.1",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
