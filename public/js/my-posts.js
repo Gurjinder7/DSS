@@ -2,7 +2,13 @@
 async function loadPosts() {
     try {
         showLoader()
-        const response = await fetch("/api/posts");
+        const userId = sessionStorage.getItem('id');
+        const response = await fetch(`/api/users/${userId}/posts`, {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
+            }
+        });
         const posts = await response.json();
 
         if (!response.ok) {
