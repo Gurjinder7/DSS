@@ -1,4 +1,3 @@
-// import { showErrorBox } from "../../src/utils/api-error-notification";
 
 document.getElementById("regForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -42,14 +41,22 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
     hasError = true;
   }
 
+  const cutEmail = email.substring(0, email.indexOf('@'))
+  console.log(cutEmail)
+  if (password.includes(username) || password.includes(cutEmail) || password.includes(name)) {
+    showError("password_error", "Password should not include username, email, name")
+    hasError = true;
+  }
+
   // Password validation
   if (password.length < 8) {
     showError("password_error", "Password must be at least 8 characters long");
     hasError = true;
   }
 
+ 
   if (hasError) return;
-
+  
   try {
     showLoader();
     const response = await fetch("/api/register", {
