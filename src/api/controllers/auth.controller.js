@@ -82,6 +82,7 @@ class AuthController {
         message: "2FA code sent",
         userId: user.id,
         requiresVerification: true,
+        username: user.username,
       });
     } catch (error) {
       const elapsedTime = Date.now() - startTime;

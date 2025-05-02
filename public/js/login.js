@@ -83,6 +83,12 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     if (response.ok) {
       console.log(data)
       sessionStorage.setItem('username', data.username)
+      if (data.userId) {
+        sessionStorage.setItem('id', data.userId)
+      } 
+      if (data.id) {
+        sessionStorage.setItem('id', data.id) 
+      }
       if (data.requiresVerification) {
         // 2FA is enabled and verification is required
         userId = data.userId;

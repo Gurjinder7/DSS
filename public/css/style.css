@@ -249,22 +249,27 @@ body {
       }
 
       .search_bar {
-        width: 750px;
+        width: 96%;
         height: 30px;
         display: inline-block;
         font-size: 14px;
         /* marg in: 20px; */
         border-radius: 3px;
-        border: 2px solid #2a55a5;
+        border: 2px solid #83a4e0;
         font-size: 20px;
       }
 
       .search_bar:hover {
-        background-color: #ddd;
+        background-color: #8adbf0;
+        cursor: pointer;
       }
 
       .fa.fa-search {
-        font-size: 28px;
+        font-size: 20px;
+        position: absolute;
+        right:1%;
+        top:2%;
+
       }
 
       h3 {
@@ -524,4 +529,17 @@ legend{
       25%      {transform:scale(var(--_s,1)) translate(-25%) rotate(0)}
       50%      {transform:scale(var(--_s,1)) translate(-25%) rotate(1turn)}
       75%,100% {transform:scale(var(--_s,1)) translate(0)    rotate(1turn)}
+  }
+
+
+  figure {
+    margin: 5px;
+  }
+
+  figure figcaption h3, h5, p  {
+    margin: 3px;
+  }
+
+  .search_posts {
+
   }
