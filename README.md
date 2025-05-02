@@ -1,9 +1,7 @@
 # Run the project - in the root directory 
   1. npm i
-  2. Go to `psql.js` file
-  3. Make changes to pgClient details - your password, username etc
-     1. If everything goes right, A DB is created in case it is first time
-     2. Else, a connection is made to use pgClient for db queries
+  2. Delete previous tables in the db
+  3. npm run migrate
   4. npm run start
 
 
