@@ -219,6 +219,49 @@ class AuthController {
     try {
       const { username, password, email, name } = req.body;
 
+      if (name.length < 2) {
+        return res
+        .status(400)
+        .json({ message: "Name must be at least 2 characters long" });
+      }
+
+      if (/\d/.test(name)) {
+        return res
+        .status(400)
+        .json({ message: "Name should not contain numbers" });
+      }
+    
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+       
+        return res
+        .status(400)
+        .json({ message: "Please enter a valid email address" });
+      }
+    
+      // Username validation
+      if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(username)) {
+       
+        return res
+        .status(400)
+        .json({ message: "Username must start with a letter and contain only letters and numbers" });
+      }
+
+      if (username.length < 3) {
+        
+        return res
+        .status(400)
+        .json({ message: "Username must be at least 3 characters long" });
+      }
+    
+      const cutEmail = email.substring(0, email.indexOf('@'))
+      if (password.includes(username) || password.includes(cutEmail) || password.includes(name)) {
+        return res
+        .status(400)
+        .json({ message: "Password should not include username, email, name." });
+      }
+
       // Password validation rules
       if (password.length < 8) {
         return res
@@ -229,7 +272,7 @@ class AuthController {
       const isCommon = commonPasswords.filter((cPass) => cPass === password);
 
       if (isCommon.length) {
-        return res.status(400).json({ message: "Cannot use common password" });
+        return res.status(400).json({ message: "Common password: Please make a strong password." });
       }
 
       await authService.register(username, password, email, name);
