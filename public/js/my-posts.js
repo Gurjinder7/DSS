@@ -169,25 +169,90 @@ document.getElementById("postForm").addEventListener("submit", async (e) => {
 });
 
 // Function to filter posts on page using search bar
-function searchPosts() {
-    const filter = document.getElementById('search').value.toUpperCase();
-    const posts = document.querySelectorAll('#myPosts article');
-
-    posts.forEach(post => {
-        const content = post.querySelector('p').textContent.toUpperCase();
-        const title = post.querySelector('h3').textContent.toUpperCase();
-        const username = post.querySelector('h5').textContent.toUpperCase();
-
-        if (content.includes(filter) || title.includes(filter) || username.includes(filter)) {
-            post.style.display = "";
-        } else {
-            post.style.display = "none";
+async function searchPosts() {
+    try {
+        const searchTerm = document.getElementById('search').value;
+        const userId = sessionStorage.getItem('id');
+        
+        if (!searchTerm.trim()) {
+            return loadPosts(); // If search is empty, load all user posts
         }
-    });
+
+        const response = await fetch(`/api/posts/search?searchTerm=${encodeURIComponent(searchTerm)}&userId=${encodeURIComponent(userId)}`, {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": getCSRFToken()
+            }
+        });
+
+        const posts = await response.json();
+
+        if (!response.ok) {
+            throw new Error(posts.message || "Failed to search posts");
+        }
+
+        // Remove current posts
+        let postList = document.getElementById('myPosts');
+        const articles = postList.querySelectorAll("article");
+        articles.forEach(article => article.remove());
+
+        // Add filtered posts
+        posts.forEach(post => {
+            const postContainer = document.createElement('article');
+            postContainer.classList.add("post");
+            postContainer.dataset.postId = post.id;
+
+            const fig = document.createElement('figure');
+            postContainer.appendChild(fig);
+
+            const figcap = document.createElement('figcaption');
+            fig.appendChild(figcap);
+            
+            const titleContainer = document.createElement('h3');
+            titleContainer.textContent = post.title;
+            figcap.appendChild(titleContainer);
+            
+            const usernameContainer = document.createElement('h5');
+            usernameContainer.textContent = post.username;
+            figcap.appendChild(usernameContainer);
+
+            const timeContainer = document.createElement('h5');
+            timeContainer.textContent = new Date(post.created_at).toLocaleString();
+            figcap.appendChild(timeContainer);
+
+            const contentContainer = document.createElement('p');
+            contentContainer.id = "content";
+            contentContainer.textContent = post.content;
+            figcap.appendChild(contentContainer);
+
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('editBtn');
+            editBtn.textContent = "Edit";
+            editBtn.addEventListener("click", editPost);
+            postContainer.appendChild(editBtn);
+
+            const delBtn = document.createElement('button');
+            delBtn.classList.add('delBtn');
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", deletePost);
+            postContainer.appendChild(delBtn);
+
+            postList.insertBefore(postContainer, postList.querySelector("article:first-child"));
+        });
+    } catch (error) {
+        console.error("Error searching posts:", error);
+        showErrorBox({ message: "Failed to search posts. Please try again later." });
+    }
 }
 
-// Add search functionality
-document.getElementById("search").addEventListener("keyup", searchPosts);
+// Add search functionality with debounce
+let searchTimeout;
+document.getElementById("search").addEventListener("keyup", (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        searchPosts();
+    }, 300); // Wait 300ms after user stops typing
+});
 
 const showErrorBox = (error) => {
     const errorBox = document.getElementById("mypost-error-box");

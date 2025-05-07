@@ -19,6 +19,7 @@ router.post("/register", requireNoAuth, authController.register);
 // Post routes
 router.post("/posts", requireAuth, postController.createPost);
 router.get("/posts", postController.getAllPosts);
+router.get("/posts/search", postController.searchPosts);
 router.get("/posts/:id", postController.getPostById);
 router.get("/users/:userId/posts", postController.getPostsByUser);
 router.put("/posts/:id", requireAuth, postController.updatePost);

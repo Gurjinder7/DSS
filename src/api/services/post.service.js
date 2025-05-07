@@ -78,6 +78,21 @@ class PostService {
     const post = await postRepository.delete(postId);
     return post;
   }
+
+  /**
+   * Searches for posts based on a search term with optional user filtering.
+   * @param {Object} params - The search parameters
+   * @param {string} params.searchTerm - The search term to look for in title or content
+   * @param {string} [params.userId] - Optional user ID to filter posts by
+   * @returns {Promise<Array>} Array of matching posts
+   */
+  async searchPosts({ searchTerm, userId }) {
+    const posts = await postRepository.search({
+      searchTerm,
+      userId,
+    });
+    return posts;
+  }
 }
 
 export const postService = new PostService();

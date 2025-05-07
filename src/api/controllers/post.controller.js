@@ -21,7 +21,9 @@ class PostController {
       const userId = req.user.id; // From auth middleware
 
       if (!title || !content) {
-        return res.status(400).json({ message: "Title and content are required" });
+        return res
+          .status(400)
+          .json({ message: "Title and content are required" });
       }
 
       const post = await postService.createPost({
@@ -122,7 +124,9 @@ class PostController {
       }
 
       if (!title && !content) {
-        return res.status(400).json({ message: "Title or content is required" });
+        return res
+          .status(400)
+          .json({ message: "Title or content is required" });
       }
 
       const updatedPost = await postService.updatePost(id, {
@@ -163,6 +167,36 @@ class PostController {
       return res.status(200).json({ message: "Post deleted successfully" });
     } catch (error) {
       console.error("Delete post error:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  /**
+   * Searches for posts based on a search term with optional user filtering
+   * @async
+   * @param {import('express').Request} req - Express request object
+   * @param {import('express').Response} res - Express response object
+   * @param {Object} req.query - Query parameters
+   * @param {string} req.query.searchTerm - The search term to look for in title or content
+   * @param {string} [req.query.userId] - Optional user ID to filter posts by
+   * @returns {Promise<import('express').Response>} Response object with matching posts
+   */
+  async searchPosts(req, res) {
+    try {
+      const { searchTerm, userId } = req.query;
+
+      if (!searchTerm) {
+        return res.status(400).json({ message: "Search term is required" });
+      }
+
+      const posts = await postService.searchPosts({
+        searchTerm,
+        userId,
+      });
+
+      return res.status(200).json(posts);
+    } catch (error) {
+      console.error("Search posts error:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

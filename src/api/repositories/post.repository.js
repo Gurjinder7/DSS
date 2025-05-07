@@ -146,6 +146,38 @@ class PostRepository {
     const result = await db.query(query);
     return result.rows;
   }
+
+  /**
+   * Searches posts by title or content with optional user filtering.
+   * @param {Object} params - The search parameters
+   * @param {string} params.searchTerm - The search term to look for in title or content
+   * @param {string} [params.userId] - Optional user ID to filter posts by
+   * @returns {Promise<Array>} An array of matching post objects
+   */
+  async search({ searchTerm, userId }) {
+    const values = [`%${searchTerm}%`];
+    let userFilter = "";
+
+    if (userId) {
+      userFilter = "AND p.user_id = $2";
+      values.push(userId);
+    }
+
+    const query = {
+      text: `
+        SELECT p.*, u.username, u.name
+        FROM POSTS p
+        JOIN USERS u ON p.user_id = u.id
+        WHERE (LOWER(p.title) LIKE LOWER($1))
+        ${userFilter}
+        ORDER BY p.created_at DESC
+      `,
+      values,
+    };
+
+    const result = await db.query(query);
+    return result.rows;
+  }
 }
 
 export const postRepository = new PostRepository();
