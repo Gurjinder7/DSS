@@ -101,16 +101,16 @@ class AuthService {
       return null;
     }
 
-    const userId = decoded.user.id;
+    const user = decoded.user;
 
-    tokenCache.deleteToken(userId, "refresh");
-    tokenCache.deleteToken(userId, "access");
+    tokenCache.deleteToken(user, "refresh");
+    tokenCache.deleteToken(user, "access");
 
-    const newAccessToken = tokenService.generateToken(userId, "access");
-    const newRefreshToken = tokenService.generateToken(userId, "refresh");
+    const newAccessToken = tokenService.generateToken(user, "access");
+    const newRefreshToken = tokenService.generateToken(user, "refresh");
 
-    tokenCache.addToken(userId, newAccessToken, "access");
-    tokenCache.addToken(userId, newRefreshToken, "refresh");
+    tokenCache.addToken(user, newAccessToken, "access");
+    tokenCache.addToken(user, newRefreshToken, "refresh");
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
