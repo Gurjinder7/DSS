@@ -540,6 +540,16 @@ legend{
     margin: 3px;
   }
 
-  .search_posts {
+#google_login {
+    text-decoration: none;
+    text-align: center;
+    margin: 1rem 0;
+    padding: 8px;
+    background-color: crimson;
+    color: #fff;
+}
 
-  }
+#google_login:hover {
+    color: #000;
+    background-color: darksalmon;
+}
