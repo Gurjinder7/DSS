@@ -7,7 +7,6 @@ import oauthApi from './api/oauth.router.js'
 import cors from "cors";
 import passport from "passport";
 
-import session from "express-session";
 
 // Store request counts per IP
 const requestCounts = {};
@@ -21,23 +20,15 @@ async function main() {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
 
-	app.use(
-		session({
-			secret: "googleUser", // session secret
-			resave: false,
-			saveUninitialized: false,
-		}),
-	);
 	app.use(cookieParser());
 	app.use(express.static("public"));
 	app.use(rateLimiter);
 	app.use(passport.initialize());
-	app.use(passport.session());
 
 	// Routes
 	app.use(views);
 	app.use("/api", api);
-  app.use("/auth", oauthApi)
+  	app.use("/auth", oauthApi)
 
 	app.listen(3000, () => {
 		console.log("Server is running on port 3000");

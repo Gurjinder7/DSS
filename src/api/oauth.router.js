@@ -14,6 +14,7 @@ oauthRouter.get("/google/callback", requireNoAuth, passport.authenticate("google
             access_type: "offline",
             scope: ["email, profile"],
             failureRedirect: "/login",
+            session:false
         }), oauthController.googleLoginCallback)
 
 

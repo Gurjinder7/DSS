@@ -15,12 +15,13 @@ passport.use(
       clientSecret: env("GOOGLE_CLIENT_SECRET"),
       callbackURL: "http://localhost:3000/auth/google/callback",
       passReqToCallback: true,
+      
     },
 
     async (request, accessToken, refreshToken, profile, done) => {
       // console.log(profile)
-      // console.log(request)
-      // console.log(response)
+      // // console.log(request)
+      // console.log(accessToken)
 
       const username = `${profile._json.given_name}7`;
 
