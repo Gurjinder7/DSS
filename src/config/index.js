@@ -10,6 +10,10 @@ export const config = {
   password: {
     pepper: env("PASSWORD_PEPPER"),
   },
+  loginAttempts: {
+    maxAttempts: env("MAX_LOGIN_ATTEMPTS") || 3,
+    blockDuration: env("LOGIN_BLOCK_DURATION") || 5 * 60, // 5 minutes in seconds
+  },
   jwt: {
     access: {
       secret: env("JWT_ACCESS_SECRET"),
