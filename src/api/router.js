@@ -15,6 +15,7 @@ router.post("/verify-2fa", authController.verify2FA);
 router.post("/refresh", authController.refresh);
 router.post("/logout", requireAuth, authController.logout);
 router.post("/register", requireNoAuth, authController.register);
+// router.post("/auth/google", oauthController)
 
 // Post routes
 router.post("/posts", requireAuth, postController.createPost);
@@ -24,5 +25,7 @@ router.get("/posts/:id", postController.getPostById);
 router.get("/users/:userId/posts", postController.getPostsByUser);
 router.put("/posts/:id", requireAuth, postController.updatePost);
 router.delete("/posts/:id", requireAuth, postController.deletePost);
+
+
 
 export default router;
