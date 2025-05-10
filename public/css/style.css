@@ -543,3 +543,22 @@ legend{
   .search_posts {
 
   }
+
+.block-message {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.block-message p {
+  margin: 0.5rem 0;
+}
+
+#blockTimer {
+  font-weight: bold;
+  color: #dc3545;
+}

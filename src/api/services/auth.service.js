@@ -5,6 +5,7 @@ import { tokenCache } from "./token-cache.service.js";
 import { tokenService } from "./token.service.js";
 import { twoFactorCodeCache } from "./2fa-code-cache.service.js";
 import { emailService } from "./email.service.js";
+import { loginAttemptsService } from "./login-attempts.service.js";
 
 /**
  * Service handling authentication-related operations including login, registration,
@@ -15,12 +16,23 @@ class AuthService {
    * Authenticates a user with their username and password.
    * @param {string} username - The username of the user trying to log in
    * @param {string} password - The plain text password of the user
-   * @returns {Promise<Object|null>} The user object if authentication is successful, null otherwise
+   * @returns {Promise<{user: Object|null, error: string|null, blockTimeRemaining: number|null}>} The authentication result
    */
   async login(username, password) {
+    // Check if the user is blocked
+    if (loginAttemptsService.isBlocked(username)) {
+      const blockTimeRemaining = loginAttemptsService.getBlockTimeRemaining(username);
+      return {
+        user: null,
+        error: "Too many failed attempts",
+        blockTimeRemaining
+      };
+    }
+
     const user = await userRepository.findByUsername(username);
     if (!user) {
-      return null;
+      loginAttemptsService.recordFailedAttempt(username);
+      return { user: null, error: "Invalid username or password", blockTimeRemaining: null };
     }
 
     const validPassword = await passwordService.compare(
@@ -28,12 +40,15 @@ class AuthService {
       user.password
     );
     if (!validPassword) {
-      return null;
+      loginAttemptsService.recordFailedAttempt(username);
+      return { user: null, error: "Invalid username or password", blockTimeRemaining: null };
     }
 
-    delete user.password;
+    // Reset attempts on successful login
+    loginAttemptsService.resetAttempts(username);
 
-    return user;
+    delete user.password;
+    return { user, error: null, blockTimeRemaining: null };
   }
 
   /**

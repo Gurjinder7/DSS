@@ -12,6 +12,56 @@ function showError(message) {
 
 let userId = null;
 let verificationTimer = null;
+let blockTimer = null;
+
+function showBlockMessage(timeRemaining) {
+  const blockContainer = document.getElementById("blockMessageContainer");
+  const blockMessage = document.getElementById("blockMessage");
+  const loginForm = document.getElementById("loginForm");
+
+  blockMessage.textContent = "Too many failed login attempts. Please try again later.";
+  blockContainer.style.display = "block";
+  loginForm.style.display = "none";
+
+  startBlockTimer(timeRemaining);
+}
+
+function startBlockTimer(timeRemaining) {
+  const blockTimer = document.getElementById("blockTimer");
+  let timeLeft = timeRemaining;
+
+  if (blockTimer) {
+    clearInterval(blockTimer);
+  }
+
+  const updateTimer = () => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    blockTimer.textContent = `Try again in ${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(blockTimer);
+      hideBlockMessage();
+    } else {
+      timeLeft--;
+    }
+  };
+
+  updateTimer(); // Initial display
+  blockTimer = setInterval(updateTimer, 1000);
+}
+
+function hideBlockMessage() {
+  const blockContainer = document.getElementById("blockMessageContainer");
+  const loginForm = document.getElementById("loginForm");
+
+  blockContainer.style.display = "none";
+  loginForm.style.display = "block";
+
+  // Clear form fields
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+}
 
 function startVerificationTimer() {
   let timeLeft = 300; // 5 minutes in seconds
@@ -98,7 +148,12 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         window.location.href = "/";
       }
     } else {
-      showError(data.message || "Login failed. Please check your credentials.");
+      if (response.status === 429) {
+        // User is blocked
+        showBlockMessage(data.blockTimeRemaining);
+      } else {
+        showError(data.message || "Login failed. Please check your credentials.");
+      }
     }
   } catch (error) {
     console.error("Login error:", error);

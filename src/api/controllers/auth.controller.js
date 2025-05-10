@@ -32,9 +32,9 @@ class AuthController {
           .json({ message: "Username and password are required" });
       }
 
-      const user = await authService.login(username, password);
+      const loginResult = await authService.login(username, password);
 
-      if (!user) {
+      if (!loginResult.user) {
         const elapsedTime = Date.now() - startTime;
         const remainingTime = 3000 - elapsedTime;
 
@@ -42,18 +42,25 @@ class AuthController {
           await sleep(remainingTime);
         }
 
+        if (loginResult.blockTimeRemaining) {
+          return res.status(429).json({ 
+            message: loginResult.error,
+            blockTimeRemaining: loginResult.blockTimeRemaining
+          });
+        }
+
         return res
           .status(401)
-          .json({ message: "Invalid username or password" });
+          .json({ message: loginResult.error });
       }
 
       // If 2FA is disabled, directly authenticate the user
       if (config.disable2FA === "true") {
-        const refreshToken = tokenService.generateToken(user, "refresh");
-        const accessToken = tokenService.generateToken(user, "access");
+        const refreshToken = tokenService.generateToken(loginResult.user, "refresh");
+        const accessToken = tokenService.generateToken(loginResult.user, "access");
 
-        tokenCache.addToken(user.id, accessToken, "access");
-        tokenCache.addToken(user.id, refreshToken, "refresh");
+        tokenCache.addToken(loginResult.user.id, accessToken, "access");
+        tokenCache.addToken(loginResult.user.id, refreshToken, "refresh");
 
         authService.setCookie(res, accessToken, "access");
         authService.setCookie(res, refreshToken, "refresh");
@@ -65,11 +72,11 @@ class AuthController {
           await sleep(remainingTime);
         }
 
-        return res.status(200).json(user);
+        return res.status(200).json(loginResult.user);
       }
 
       // If 2FA is enabled, initiate 2FA process
-      await authService.initiate2FA(user);
+      await authService.initiate2FA(loginResult.user);
 
       const elapsedTime = Date.now() - startTime;
       const remainingTime = 3000 - elapsedTime;
@@ -80,9 +87,9 @@ class AuthController {
 
       return res.status(200).json({ 
         message: "2FA code sent",
-        userId: user.id,
+        userId: loginResult.user.id,
         requiresVerification: true,
-        username: user.username,
+        username: loginResult.user.username,
       });
     } catch (error) {
       const elapsedTime = Date.now() - startTime;
